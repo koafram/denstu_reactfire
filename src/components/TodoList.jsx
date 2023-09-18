@@ -1,53 +1,62 @@
 // Third-party
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useFirestore, useFirestoreCollectionData, FirestoreProvider, useFirebaseApp } from 'reactfire';
+import { doc, collection, getFirestore, setDoc, deleteDoc } from 'firebase/firestore';
 
 // Components
 import { TodoForm, FilterStatus, TodoItem, Footer } from ".";
 
 // Utils
-import { LOCAL_STORAGE_NAME, EMPTY_TODO, VIEW_STATUSES } from "../utils/constants";
+import { TODO_LIST_COLLECTION, LOCAL_STORAGE_NAME, EMPTY_TODO, VIEW_STATUSES } from "../utils/constants";
 
 function TodoList() {
+  const firebaseApp = useFirebaseApp();
 
+  const firestore = useFirestore();
+  const firestoreInstance = getFirestore(firebaseApp);
 
-  console.log("I am getting here2222 in TODODODOODOOD");
+  const todoListDBRef = collection(firestore, TODO_LIST_COLLECTION);
+  const { status, data } = useFirestoreCollectionData(todoListDBRef);
 
-
-  const [todos, setTodos] = useState(() => {
-    const localTodos = localStorage.getItem(LOCAL_STORAGE_NAME);
-
-    if (localTodos === null){
-      return [];
-    }
-    
-    return JSON.parse(localTodos);
-  });
-  // const [todos, setTodos] = useState([]);
+  const [todos, setTodos] = useState([]);
   const [filteredStatus, setStatus] = useState("all");
   const [filteredTodos, setFilteredTodos] = useState([]);
   const [editItem, setEdit] = useState(EMPTY_TODO);
+  const scrollToTop = useRef();
+
 
   useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_NAME, JSON.stringify(todos));
-  }, [todos]);
+    setTodos(data);
+  }, [data]);
 
   useEffect(() => {
      filterHandler();
   }, [todos, filteredStatus]);
 
+
   // Adds a todo
-  const addTodo = (todo) => {
+  const addTodo = async (todo) => {
     if (!todo.title || /^\s*$/.test(todo.title)) {
       return;
     }
 
     const newTodos = [todo, ...todos];
 
+    console.log("about to add new todo = ", todo);
+
+    // todosRef.add(todo);
+    // const t = await addDoc(todosDBRef, todo);
+    // console.log("Document written with ID: ", t.id);
+
+    await setDoc(doc(firestoreInstance, TODO_LIST_COLLECTION, todo.id), todo);
+  
     setTodos(newTodos);
+
+    scrollToTop.current.scrollIntoView({ behavior: 'smooth' });
   };
 
   // Updates a todo
-  const updateTodo = (todo, updatedTodo) => {
+  const updateTodo = async (todo, updatedTodo) => {
     if (!updatedTodo.title || /^\s*$/.test(updatedTodo.title)) {
       return;
     }
@@ -55,26 +64,37 @@ function TodoList() {
     setTodos((prev) =>
       prev.map((item) => (item.id === todo.id ? updatedTodo : item))
     );
+
+    await setDoc(doc(firestore, TODO_LIST_COLLECTION, updatedTodo.id), updatedTodo);
+
+    scrollToTop.current.scrollIntoView({ behavior: 'smooth' });
   };
 
   // Deletes a todo
-  const deleteTodo = (todoId) => {
+  const deleteTodo = async (todoId) => {
     const remainingTodos = [...todos].filter((todo) => todo.id !== todoId);
+
+    await deleteDoc(doc(firestore, TODO_LIST_COLLECTION, todoId));
 
     setTodos(remainingTodos);
   };
 
   // Marks a todo as complete
-  const completeTodo = (todoId) => {
+  const completeTodo = async (todoId) => {
 
-    console.log("completed now!!!!!");
+    let completedTodo;
 
     let updatedTodos = todos.map((todo) => {
       if (todo.id === todoId) {
         todo.isComplete = !todo.isComplete;
+        completedTodo = todo;
+
+        console.log("completedTodo = ", completedTodo);
       }
       return todo;
     });
+
+    await setDoc(doc(firestore, TODO_LIST_COLLECTION, todoId), completedTodo);
 
     setTodos(updatedTodos);
   };
@@ -84,6 +104,8 @@ function TodoList() {
     const todoToEdit = todos.find((todo) => todo.id === todoId);
 
     setEdit(todoToEdit);
+
+    scrollToTop.current.scrollIntoView({ behavior: 'smooth' });
   };
 
   // Todo form update
@@ -92,6 +114,8 @@ function TodoList() {
 
     // Clears the todo meant for editing
     setEdit(EMPTY_TODO);
+
+    scrollToTop.current.scrollIntoView({ behavior: 'smooth' });
   };
 
   // Updates the view filter
@@ -119,29 +143,35 @@ function TodoList() {
   };
 
   return (
-    <>
-      <h1>Denstu Create To-Do List</h1>
-      {!editItem.id ? (
-        <TodoForm processTodoItem={addTodo} />
-      ) : (
-        <TodoForm editItem={editItem} processTodoItem={formUpdateTodo} />
-      )}
-      {todos.length > 0 ? (
-        <>
-          <FilterStatus statusHandler={statusHandler} disabled={editItem.id !== null} />
-          <TodoItem
-            todos={filteredTodos}
-            isEditing={editItem.id !== null}
-            setTodoForEdit={setTodoForEdit}
-            completeTodo={completeTodo}
-            deleteTodo={deleteTodo}
-          />
-        </>
-      ) : (
-        "No todos to show"
-      )}
-      <Footer />
-    </>
+    <FirestoreProvider sdk={firestoreInstance}>
+      <>
+        <h1 ref={scrollToTop}>Dentsu Creative To-Do List</h1>
+        {!editItem?.id ? (
+          <TodoForm processTodoItem={addTodo} />
+        ) : (
+          <TodoForm editItem={editItem} processTodoItem={formUpdateTodo} />
+        )}
+        {(status === 'loading') ? (
+          "Fetching to-do list..."
+        ) : (
+          todos?.length > 0 ? (
+            <>
+              <FilterStatus statusHandler={statusHandler} disabled={editItem?.id !== null} />
+              <TodoItem
+                todos={filteredTodos}
+                isEditing={editItem?.id !== null}
+                setTodoForEdit={setTodoForEdit}
+                completeTodo={completeTodo}
+                deleteTodo={deleteTodo}
+              />
+            </>
+          ) : (
+            "No to-dos to show"
+          )
+        )}
+        <Footer />
+      </>
+    </FirestoreProvider>
   );
 }
 

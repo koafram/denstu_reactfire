@@ -62,10 +62,10 @@ function TodoForm({ processTodoItem, editItem }) {
       id:
         editItem && editItem.id
           ? editItem.id
-          : Math.floor(Math.random() * 10000),
+          : Math.floor(Math.random() * 10000).toString(),
       title: inputs.title,
       description: inputs.description,
-      dateTime: inputs.dateTime,
+      dateTime: inputs.dateTime.toString(),
       isComplete: editItem && editItem.id ? editItem.isComplete : false,
     });
 
@@ -101,8 +101,8 @@ function TodoForm({ processTodoItem, editItem }) {
           className={classNames("todo-input date-picker", {
             edit: editItem.id,
           })}
-          // selected={(inputs.dateTime) ? inputs.dateTime : new Date()}
-          selected={inputs.dateTime}
+          selected={(inputs?.dateTime) ? new Date(inputs.dateTime) : new Date()}
+          // selected={new Date(inputs.dateTime)}
           onChange={(date) => handleDateChange(date)}
           showTimeSelect
           minDate={

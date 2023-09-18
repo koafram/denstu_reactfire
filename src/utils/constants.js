@@ -6,6 +6,7 @@ export const APP_VERSION = "1.0.1";
 export const UPLOADS_FOLDER = "/users/uploads";
 
 export const LOCAL_STORAGE_NAME = "ReactTodoList";
+export const TODO_LIST_COLLECTION = "todoList";
 
 export const EMPTY_TODO = {
   id: null,

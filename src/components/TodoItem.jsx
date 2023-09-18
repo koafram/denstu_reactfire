@@ -21,9 +21,6 @@ import "./css/todoitem.css";
 // function TodoItem({ todos, isEditing, setTodoForEdit, completeTodo, deleteTodo }: Props) {
 
 function TodoItem({ todos, isEditing, setTodoForEdit, completeTodo, deleteTodo }) {
-
-  console.log(completeTodo);
-
   return todos.map((todo, index) => (
     <div
       className={classNames("todo-row", {

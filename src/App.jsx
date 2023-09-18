@@ -1,20 +1,29 @@
 // Third-party
-// import { useState, useEffect } from "react";
 import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { FirestoreProvider, useFirebaseApp } from 'reactfire';
+import { getFirestore } from 'firebase/firestore';
+import { getAuth } from "firebase/auth";
+import { getDatabase } from 'firebase/database';
 
 // Components
 import { TodoList, About } from "./components";
-// import { About } from "./components";
  
-// Utils
-import { API_SERVER, API_TODOS, LANGUAGE } from "./utils/constants";
-
 // Styling
-import './assets/css/app.css'
+import './assets/css/app.css';
+
+// Initialize Firebase
+// const app = initializeApp(firebaseConfig);
+//// const auth = firebase.auth();
+// const auth = getAuth(app);
 
 function App() {
+  const firebaseApp = useFirebaseApp();
+  const firestoreInstance = getFirestore(firebaseApp);
+
   const [userInfo, setUserInfo] = useState([]);
+
+  // const [user] = useAuth(auth);
 
   // Fetch authenticated user's todos
   // const fetchUserInfo = async () => {
@@ -39,14 +48,16 @@ function App() {
   };
 
   return (
-    <div className="todo-app">
-      <Router>
-        <Routes>
-          <Route path="/" exact Component={TodoList} />
-          <Route path="/about" Component={About} />
-        </Routes>
-      </Router>
-    </div>
+    <FirestoreProvider sdk={firestoreInstance}>
+      <div className="todo-app">
+        <Router>
+          <Routes>
+            <Route path="/" exact Component={TodoList} />
+            <Route path="/about" Component={About} />
+          </Routes>
+        </Router>
+      </div>
+    </FirestoreProvider>
   );
 }
 
