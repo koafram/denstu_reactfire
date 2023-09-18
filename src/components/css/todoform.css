@@ -1,0 +1,47 @@
+.todo-form {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: stretch;
+  width: 80%;
+  margin: 0 auto;
+  margin-bottom: 32px;
+}
+
+.todo-input {
+  padding: 8px 16px;
+  border: 2px solid #dad8df;
+  outline: none;
+  width: 280px;
+  margin: 8px;
+}
+
+.todo-input::placeholder {
+  color: #8b8b8b;
+}
+
+.todo-input.date-picker {
+  width: 200px;
+}
+
+.todo-button {
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+  text-transform: capitalize;
+  margin-left: 180px;
+}
+
+.todo-input.edit {
+  border: 2px solid #455e4e;
+}
+
+.todo-button.edit {
+  background: #455e4e;
+  padding: 10px 18px;
+  color: rgb(248, 243, 236);
+}
