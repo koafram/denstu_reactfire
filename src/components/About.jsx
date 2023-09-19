@@ -10,7 +10,7 @@ import "./css/about.css";
 function About() {
   return (
     <div className="about">
-      <h3>Todo List Version {APP_VERSION}</h3>
+      <h3>To-Do List Version {APP_VERSION}</h3>
       <Link to="/">Go Back</Link>
     </div>
   );

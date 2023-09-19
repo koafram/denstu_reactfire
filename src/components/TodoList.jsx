@@ -7,9 +7,10 @@ import { doc, collection, getFirestore, setDoc, deleteDoc } from 'firebase/fires
 import { TodoForm, FilterStatus, TodoItem, Footer } from ".";
 
 // Utils
-import { TODO_LIST_COLLECTION, LOCAL_STORAGE_NAME, EMPTY_TODO, VIEW_STATUSES } from "../utils/constants";
+import { TODO_LIST_COLLECTION, EMPTY_TODO, VIEW_STATUSES } from "../utils/constants";
 
 function TodoList() {
+  // Initialize/use Firebase
   const firebaseApp = useFirebaseApp();
 
   const firestore = useFirestore();
@@ -34,19 +35,13 @@ function TodoList() {
   }, [todos, filteredStatus]);
 
 
-  // Adds a todo
+  // Adds a to-do
   const addTodo = async (todo) => {
     if (!todo.title || /^\s*$/.test(todo.title)) {
       return;
     }
 
     const newTodos = [todo, ...todos];
-
-    console.log("about to add new todo = ", todo);
-
-    // todosRef.add(todo);
-    // const t = await addDoc(todosDBRef, todo);
-    // console.log("Document written with ID: ", t.id);
 
     await setDoc(doc(firestoreInstance, TODO_LIST_COLLECTION, todo.id), todo);
   
@@ -55,7 +50,7 @@ function TodoList() {
     scrollToTop.current.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Updates a todo
+  // Updates a to-do
   const updateTodo = async (todo, updatedTodo) => {
     if (!updatedTodo.title || /^\s*$/.test(updatedTodo.title)) {
       return;
@@ -70,7 +65,7 @@ function TodoList() {
     scrollToTop.current.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Deletes a todo
+  // Deletes a to-do
   const deleteTodo = async (todoId) => {
     const remainingTodos = [...todos].filter((todo) => todo.id !== todoId);
 
@@ -79,7 +74,7 @@ function TodoList() {
     setTodos(remainingTodos);
   };
 
-  // Marks a todo as complete
+  // Marks a to-do as complete
   const completeTodo = async (todoId) => {
 
     let completedTodo;
@@ -88,8 +83,6 @@ function TodoList() {
       if (todo.id === todoId) {
         todo.isComplete = !todo.isComplete;
         completedTodo = todo;
-
-        console.log("completedTodo = ", completedTodo);
       }
       return todo;
     });
@@ -99,7 +92,7 @@ function TodoList() {
     setTodos(updatedTodos);
   };
 
-  // Sets up an exisiting todo for updating
+  // Sets up an exisiting to-do for updating
   const setTodoForEdit = (todoId) => {
     const todoToEdit = todos.find((todo) => todo.id === todoId);
 
@@ -108,11 +101,11 @@ function TodoList() {
     scrollToTop.current.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Todo form update
+  // To-do form update
   const formUpdateTodo = (todo) => {
     updateTodo(editItem, todo);
 
-    // Clears the todo meant for editing
+    // Clears the to-do meant for editing
     setEdit(EMPTY_TODO);
 
     scrollToTop.current.scrollIntoView({ behavior: 'smooth' });
@@ -123,7 +116,7 @@ function TodoList() {
     setStatus(status);
   };
 
-  // Filters todos
+  // Filters to-dos
   const filterHandler = () =>{
     let filtered = [];
 
