@@ -10,16 +10,6 @@ import { EMPTY_TODO } from "../utils/constants";
 // Styling
 import "./css/todoitem.css";
 
-// interface Props {
-//   todos: object;
-//   isEditing: boolean;
-//   setTodoForEdit: (id: number) => void;
-//   completeTodo: (id: number) => void;
-//   deleteTodo: (id: number) => void;
-// }
-
-// function TodoItem({ todos, isEditing, setTodoForEdit, completeTodo, deleteTodo }: Props) {
-
 function TodoItem({ todos, isEditing, setTodoForEdit, completeTodo, deleteTodo }) {
   return todos.map((todo, index) => (
     <div

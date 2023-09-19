@@ -66,10 +66,6 @@ function TodoForm({ processTodoItem, editItem }) {
     setInputs(emptyValues);
   };
 
-  // const temp = (inputs.dateTime) ? inputs.dateTime : new Date();
-
-  // console.log("temp ==== ", temp);
-
   return (
     <form onSubmit={handleSubmit} className="todo-form">
       <>
