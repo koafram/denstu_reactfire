@@ -2,7 +2,7 @@
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import moment from "moment";
-import { CheckSquare, Trash2, Edit2 } from "react-feather";
+import { Square, CheckSquare, Trash2, Edit2 } from "react-feather";
 
 // Utils
 import { EMPTY_TODO } from "../utils/constants";
@@ -30,20 +30,31 @@ function TodoItem({ todos, isEditing, setTodoForEdit, completeTodo, deleteTodo }
       key={index}
       onDoubleClick={() => (!isEditing && completeTodo(todo.id))}
     >
-      <div className="todo-icons">
-        <CheckSquare
-          size="18"
-          onClick={() => console.log(todo.id)}
-          className="complete-icon"
-        />
-      </div>
-      <div key={todo.id} className="todo-text">
-        <div className="todo-title">{todo.title}</div>
-        <div className="todo-description">{todo.description}</div>
-        <div className="todo-datetime">
-          {moment(todo.dateTime).format("ddd MMMM Do YYYY [at] h:mm A")}
+      <span>
+        <div className="todo-icons">
+          {(todo.isComplete) ? (
+            <CheckSquare
+              size="18"
+              onClick={() => (!isEditing && completeTodo(todo.id))}
+              className="complete-icon"
+            />
+            ) : (
+              <Square
+                size="18"
+                onClick={() => (!isEditing && completeTodo(todo.id))}
+                className="complete-icon"
+              />
+            )
+          }
         </div>
-      </div>
+        <div key={todo.id} className="todo-text">
+          <div className="todo-title">{todo.title}</div>
+          <div className="todo-description">{todo.description}</div>
+          <div className="todo-datetime">
+            {moment(todo.dateTime).format("ddd MMMM Do YYYY [at] h:mm A")}
+          </div>
+        </div>
+      </span>
       <div className="todo-icons">
         {!isEditing && (
           <>
