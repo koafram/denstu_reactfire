@@ -12,21 +12,13 @@ import { EMPTY_TODO } from "../utils/constants";
 import "react-datepicker/dist/react-datepicker.css";
 import "./css/todoform.css";
 
-const emptyValues = {
-  title: "",
-  description: "",
-  dateTime: new Date(),
-};
 
 function TodoForm({ processTodoItem, editItem }) {
-
-
-  // const initialValues = {
-  //   title: editItem && editItem.id ? editItem.title : emptyValues.title,
-  //   title1: editItem?.id ? editItem.title : emptyValues.title,
-  //   description: editItem && editItem.id ? editItem.description : emptyValues.description,
-  //   dateTime: editItem && editItem.id ? editItem.dateTime : emptyValues.dateTime,
-  // };
+  const emptyValues = {
+    title: "",
+    description: "",
+    dateTime: new Date(),
+  };
 
   const [inputs, setInputs] = useState(editItem);
 
@@ -65,7 +57,7 @@ function TodoForm({ processTodoItem, editItem }) {
           : Math.floor(Math.random() * 10000).toString(),
       title: inputs.title,
       description: inputs.description,
-      dateTime: inputs.dateTime.toString(),
+      dateTime: ((inputs?.dateTime) ? inputs.dateTime : new Date()).toString(),
       isComplete: editItem && editItem.id ? editItem.isComplete : false,
     });
 
@@ -73,6 +65,10 @@ function TodoForm({ processTodoItem, editItem }) {
 
     setInputs(emptyValues);
   };
+
+  // const temp = (inputs.dateTime) ? inputs.dateTime : new Date();
+
+  // console.log("temp ==== ", temp);
 
   return (
     <form onSubmit={handleSubmit} className="todo-form">
@@ -101,8 +97,7 @@ function TodoForm({ processTodoItem, editItem }) {
           className={classNames("todo-input date-picker", {
             edit: editItem.id,
           })}
-          selected={(inputs?.dateTime) ? new Date(inputs.dateTime) : new Date()}
-          // selected={new Date(inputs.dateTime)}
+          selected={new Date(inputs.dateTime)}
           onChange={(date) => handleDateChange(date)}
           showTimeSelect
           minDate={
